@@ -1,0 +1,78 @@
+// Eight AQA GCSE subjects. Maths is fully built; the rest are scaffolded as
+// "coming soon" so they appear on the dashboard without blocking launch.
+export const SUBJECTS = [
+  {
+    slug: 'maths',
+    name: 'Mathematics',
+    spec: 'AQA 8300',
+    status: 'live',
+    tagline: 'Number, algebra, geometry, ratio, probability & statistics.',
+    accent: '#f0a93b',
+    glyph: 'M',
+  },
+  {
+    slug: 'biology',
+    name: 'Biology',
+    spec: 'AQA 8461',
+    status: 'soon',
+    tagline: 'Cells, organisation, infection, bioenergetics and ecology.',
+    accent: '#4f9d7e',
+    glyph: 'B',
+  },
+  {
+    slug: 'chemistry',
+    name: 'Chemistry',
+    spec: 'AQA 8462',
+    status: 'soon',
+    tagline: 'Atomic structure, bonding, quantitative and organic chemistry.',
+    accent: '#5a8fb0',
+    glyph: 'C',
+  },
+  {
+    slug: 'physics',
+    name: 'Physics',
+    spec: 'AQA 8463',
+    status: 'soon',
+    tagline: 'Energy, electricity, particle model, forces and waves.',
+    accent: '#c75d43',
+    glyph: 'P',
+  },
+  {
+    slug: 'english-language',
+    name: 'English Language',
+    spec: 'AQA 8700',
+    status: 'soon',
+    tagline: 'Reading, creative writing and transactional responses.',
+    accent: '#9a6fb0',
+    glyph: 'E',
+  },
+  {
+    slug: 'english-literature',
+    name: 'English Literature',
+    spec: 'AQA 8702',
+    status: 'soon',
+    tagline: 'Shakespeare, the 19th-century novel, poetry and modern texts.',
+    accent: '#b04668',
+    glyph: 'L',
+  },
+  {
+    slug: 'computer-science',
+    name: 'Computer Science',
+    spec: 'AQA 8525',
+    status: 'soon',
+    tagline: 'Algorithms, programming, data representation and networks.',
+    accent: '#3c7e63',
+    glyph: 'D',
+  },
+  {
+    slug: 'geography',
+    name: 'Geography',
+    spec: 'AQA 8035',
+    status: 'soon',
+    tagline: 'Living world, UK landscapes, urban issues and resources.',
+    accent: '#c79a3b',
+    glyph: 'G',
+  },
+]
+
+export const subjectBySlug = (slug) => SUBJECTS.find((s) => s.slug === slug)
