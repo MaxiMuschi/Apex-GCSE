@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-// Sticky marketing nav bar for the Apex Academy landing page. Navy/gold brand,
-// CSS-only depth, condenses on scroll. Part of the marketing page only.
+// Sticky glassmorphism marketing navbar for the Apex Academy GCSE landing page.
+// Logo left · links centre · high-contrast "Start Learning" CTA right.
+// CSS-only depth, condenses on scroll. Marketing page only — no app logic.
 const LINKS = [
   { href: '#subjects', label: 'Subjects' },
-  { href: '#curriculum', label: 'Curriculum' },
+  { href: '#advantage', label: 'Why Apex' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#faq', label: 'FAQ' },
 ]
@@ -13,7 +14,8 @@ const LINKS = [
 export default function SiteHeader({
   logoSrc = '/apex-logo.svg',
   ctaHref = '/signup',
-  ctaLabel = 'Start learning',
+  ctaLabel = 'Start Learning',
+  loginHref = '/login',
 }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -30,13 +32,33 @@ export default function SiteHeader({
   return (
     <header className={`mkt-header ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="mkt-wrap mkt-header-inner">
+        {/* Logo — left */}
         <a href="#top" className="mkt-brand" onClick={close} aria-label="Apex Academy home">
           <img className="mkt-brand-mark" src={logoSrc} width="38" height="38" alt="" />
           <span className="mkt-brand-text">
             <span className="mkt-brand-name">Apex Academy</span>
-            <span className="mkt-brand-tag">KS3 &amp; GCSE</span>
+            <span className="mkt-brand-tag">GCSE · AQA</span>
           </span>
         </a>
+
+        {/* Links — centre (and CTA inside the drawer on mobile) */}
+        <nav className={`mkt-nav ${open ? 'is-open' : ''}`} aria-label="Primary">
+          {LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="mkt-nav-link" onClick={close}>
+              {l.label}
+            </a>
+          ))}
+          <Link to={loginHref} className="mkt-header-login" onClick={close}>Log in</Link>
+          <Link to={ctaHref} className="mkt-btn mkt-btn-teal mkt-header-cta" onClick={close}>
+            {ctaLabel}
+          </Link>
+        </nav>
+
+        {/* Actions — right (desktop) */}
+        <div className="mkt-header-actions">
+          <Link to={loginHref} className="mkt-header-login">Log in</Link>
+          <Link to={ctaHref} className="mkt-btn mkt-btn-teal mkt-header-cta">{ctaLabel}</Link>
+        </div>
 
         <button
           type="button"
@@ -47,17 +69,6 @@ export default function SiteHeader({
         >
           <span /><span /><span />
         </button>
-
-        <nav className={`mkt-nav ${open ? 'is-open' : ''}`} aria-label="Primary">
-          {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="mkt-nav-link" onClick={close}>
-              {l.label}
-            </a>
-          ))}
-          <Link to={ctaHref} className="mkt-btn mkt-btn-primary mkt-header-cta" onClick={close}>
-            {ctaLabel}
-          </Link>
-        </nav>
       </div>
     </header>
   )

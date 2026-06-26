@@ -2,179 +2,106 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS } from '../data/subjects.js'
 import SiteHeader from '../components/SiteHeader.jsx'
-import FounderWelcome from '../components/FounderWelcome.jsx'
 import '../marketing.css'
 
 /* ----------------------------------------------------------------
-   KS3 vs GCSE curriculum, for the tabbed switcher.
+   Honest, editable stat placeholders. The user fills these in — no
+   numbers are invented here. `placeholder: true` renders the value as
+   an obvious "{X}" token so it is easy to find and replace.
+   EDIT ME → src/pages/Landing.jsx (STATS)
 ---------------------------------------------------------------- */
-const CURRICULUM = {
-  ks3: {
-    label: 'KS3',
-    years: 'Years 7–9',
-    headline: 'Lay an unshakeable foundation.',
-    blurb:
-      'The building blocks that make GCSE feel easy — taught with the same clarity and instant feedback, one confident step at a time.',
-    strands: [
-      { name: 'Number & Algebra', detail: 'Fluency with fractions, negatives, ratio and the first taste of equations.' },
-      { name: 'Reading & Writing', detail: 'Comprehension, vocabulary and structured writing that travels into GCSE English.' },
-      { name: 'Working Scientifically', detail: 'Cells, forces, particles and the habit of testing ideas with evidence.' },
-      { name: 'Shape & Space', detail: 'Angles, area, transformations and the geometric instinct exams reward.' },
-    ],
-  },
-  gcse: {
-    label: 'GCSE',
-    years: 'Years 10–11',
-    headline: 'Convert effort into the grade.',
-    blurb:
-      'AQA-aligned courses built around exam command words, mark schemes and worked solutions that show exactly where the marks live.',
-    strands: [
-      { name: 'AQA Mathematics 8300', detail: 'Number, algebra, geometry, ratio, probability and statistics — fully live today.' },
-      { name: 'Sciences (8461–8463)', detail: 'Biology, Chemistry and Physics scaffolded to the AQA specifications.' },
-      { name: 'English Lang & Lit', detail: 'Reading, creative and transactional writing, set texts and poetry.' },
-      { name: 'Computer Science 8525', detail: 'Algorithms, programming, data representation and networks.' },
-    ],
-  },
-}
-
-const FAQS = [
-  {
-    q: 'How much does Apex Academy cost?',
-    a: 'A single learner is KES 500 per month, or KES 1,500 per term — saving you a month across each term. The first weeks of every course are free, so you can see the platform working before you pay a shilling.',
-  },
-  {
-    q: 'Is the curriculum aligned to AQA?',
-    a: 'Yes. Our GCSE courses follow the AQA specifications, and every lesson is written around the command words and mark schemes examiners actually use.',
-  },
-  {
-    q: 'Can parents follow their child’s progress?',
-    a: 'Absolutely. A parent dashboard shows mastery per subject and per unit, so you always know where your child is strong and where to focus next.',
-  },
-  {
-    q: 'How do I pay?',
-    a: 'Payments run on M-Pesa — no card and no subscription traps. You unlock the full course with a single, secure mobile-money payment.',
-  },
-  {
-    q: 'Does it work on a phone?',
-    a: 'Every part of Apex Academy is built mobile-first, so lessons, practice and progress work beautifully on the phone most students already carry.',
-  },
+const STATS = [
+  { value: '{X}', label: 'Lessons live now', placeholder: true },
+  { value: 'AQA', label: 'Fully spec-aligned' },
+  { value: 'KES 500', unit: '/mo', label: 'Affordable from' },
+  { value: 'Self-paced', label: 'Learn on your schedule' },
 ]
 
 /* ----------------------------------------------------------------
-   Expandable subjects grid — reveals the full eight on click and
-   lets each card open to show its detail.
+   "The Apex Advantage" — three pillars. Iconography is inline SVG
+   (no emoji), light text on a deep-navy band.
 ---------------------------------------------------------------- */
-function SubjectsGrid() {
-  const [showAll, setShowAll] = useState(false)
-  const [open, setOpen] = useState(null)
-  const visible = showAll ? SUBJECTS : SUBJECTS.slice(0, 4)
+const ADVANTAGES = [
+  {
+    title: 'Structured, spec-aligned lessons',
+    text: 'Every lesson maps directly to the AQA Mathematics 8300 specification — sequenced topic by topic, with worked examples and instant feedback so you always know where the marks are.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
+        <path d="M14 4v6h6M8 13h8M8 17h5" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Learn at your own pace',
+    text: 'No fixed timetable and no pressure. Open the platform whenever it suits you, repeat any lesson as many times as you need, and pick up exactly where you left off — on a phone, tablet or laptop.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 3" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Affordable M-Pesa pricing',
+    text: 'Pay the way Kenya pays. Unlock the full course with a simple, secure M-Pesa payment — no cards, no contracts, and the first three weeks of every course are free.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="6" y="2" width="12" height="20" rx="3" />
+        <path d="M10 6h4M11 18h2" />
+      </svg>
+    ),
+  },
+]
 
-  return (
-    <section className="mkt-section mkt-subjects" id="subjects">
-      <div className="mkt-wrap">
-        <div className="mkt-section-head">
-          <span className="mkt-eyebrow">Eight subjects · one platform</span>
-          <h2 className="mkt-h2">Pick a subject. Start climbing.</h2>
-          <p className="mkt-section-lead">
-            Mathematics is fully live today. The rest are scaffolded and arriving fast —
-            tap any card to see what’s inside.
-          </p>
-        </div>
+const FAQS = [
+  {
+    q: 'Is it self-paced, or are there fixed class times?',
+    a: 'Apex Academy is fully self-paced. There are no live class times to attend — you decide when and how often you study. Lessons stay open around the clock, so you can revise at lunch, in the evening, or all weekend, and the platform remembers exactly where you stopped.',
+  },
+  {
+    q: 'Do I need to be online, and does it work on a phone?',
+    a: 'Yes, lessons run online in your web browser, and the whole platform is built mobile-first — so it works beautifully on the phone most students already carry, as well as on a tablet or laptop. All you need is an internet connection.',
+  },
+  {
+    q: 'How much does it cost and how do I pay with M-Pesa?',
+    a: 'The first three weeks of every course are free. After that it is KES 500 per month or KES 1,500 per term. Payment is made securely through M-Pesa — you confirm the prompt on your phone and your full access unlocks straight away. No card and no subscription traps.',
+  },
+  {
+    q: 'What does AQA GCSE Maths (8300) cover?',
+    a: 'The AQA Mathematics 8300 specification spans six areas: Number; Algebra; Ratio, Proportion and Rates of Change; Geometry and Measures; Probability; and Statistics. Our course works through each of these in order, building from the foundations to exam-style questions with full worked solutions.',
+  },
+]
 
-        <div className={`mkt-subject-grid ${showAll ? 'is-expanded' : ''}`}>
-          {visible.map((s, i) => {
-            const isOpen = open === s.slug
-            return (
-              <button
-                key={s.slug}
-                type="button"
-                className={`mkt-subject-card tilt ${isOpen ? 'is-open' : ''} ${s.status}`}
-                style={{ '--reveal-delay': `${(i % 4) * 60}ms` }}
-                onClick={() => setOpen(isOpen ? null : s.slug)}
-                aria-expanded={isOpen}
-              >
-                <span className="mkt-subject-top">
-                  <span className="mkt-subject-glyph" style={{ background: s.accent }}>
-                    {s.glyph}
-                  </span>
-                  <span className={`mkt-chip ${s.status === 'live' ? 'is-live' : 'is-soon'}`}>
-                    {s.status === 'live' ? 'Available' : 'Coming soon'}
-                  </span>
-                </span>
-                <span className="mkt-subject-name">{s.name}</span>
-                <span className="mkt-subject-spec">{s.spec}</span>
-                <span className="mkt-subject-detail" aria-hidden={!isOpen}>
-                  <span className="mkt-subject-detail-inner">{s.tagline}</span>
-                </span>
-                <span className="mkt-subject-cue">{isOpen ? 'Close −' : 'Details +'}</span>
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="mkt-subjects-actions">
-          <button
-            type="button"
-            className="mkt-btn mkt-btn-ghost"
-            onClick={() => { setShowAll((v) => !v); setOpen(null) }}
-            aria-expanded={showAll}
-          >
-            {showAll ? 'Show fewer subjects' : `Reveal all ${SUBJECTS.length} subjects`}
-          </button>
-        </div>
-      </div>
-    </section>
-  )
-}
+const CHECK = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+)
+const ARROW = (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+)
 
 /* ----------------------------------------------------------------
-   KS3 / GCSE curriculum switcher.
+   Lightweight reveal-on-scroll for sections (IntersectionObserver).
 ---------------------------------------------------------------- */
-function CurriculumTabs() {
-  const [tab, setTab] = useState('ks3')
-  const data = CURRICULUM[tab]
-
-  return (
-    <section className="mkt-section mkt-curriculum" id="curriculum">
-      <div className="mkt-wrap">
-        <div className="mkt-section-head center">
-          <span className="mkt-eyebrow mkt-eyebrow-gold">One continuous journey</span>
-          <h2 className="mkt-h2 on-dark">From KS3 foundations to GCSE grades.</h2>
-        </div>
-
-        <div className="mkt-tabs" role="tablist" aria-label="Curriculum stage">
-          {Object.entries(CURRICULUM).map(([key, c]) => (
-            <button
-              key={key}
-              role="tab"
-              aria-selected={tab === key}
-              className={`mkt-tab ${tab === key ? 'is-active' : ''}`}
-              onClick={() => setTab(key)}
-            >
-              <strong>{c.label}</strong>
-              <span>{c.years}</span>
-            </button>
-          ))}
-          <span className={`mkt-tab-glider ${tab === 'gcse' ? 'right' : ''}`} aria-hidden="true" />
-        </div>
-
-        <div className="mkt-tab-panel" role="tabpanel" key={tab}>
-          <div className="mkt-tab-intro">
-            <h3 className="mkt-h3 on-dark">{data.headline}</h3>
-            <p>{data.blurb}</p>
-          </div>
-          <div className="mkt-strands">
-            {data.strands.map((s) => (
-              <article key={s.name} className="mkt-strand tilt">
-                <h4>{s.name}</h4>
-                <p>{s.detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  )
+function useReveal() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const els = ref.current?.querySelectorAll('.mkt-reveal')
+    if (!els?.length) return
+    if (reduce) { els.forEach((el) => el.classList.add('is-in')); return }
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target) } }),
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+  return ref
 }
 
 /* ----------------------------------------------------------------
@@ -185,16 +112,16 @@ function Faq() {
   return (
     <section className="mkt-section mkt-faq" id="faq">
       <div className="mkt-wrap mkt-faq-wrap">
-        <div className="mkt-faq-head">
+        <div className="mkt-faq-head mkt-reveal">
           <span className="mkt-eyebrow">Good to know</span>
           <h2 className="mkt-h2">Questions, answered.</h2>
-          <p className="mkt-section-lead">
+          <p className="mkt-lead">
             Everything you need to know before your first lesson. Still curious?
             Reach the team any time.
           </p>
         </div>
 
-        <div className="mkt-accordion">
+        <div className="mkt-accordion mkt-reveal">
           {FAQS.map((f, i) => {
             const isOpen = open === i
             return (
@@ -209,7 +136,7 @@ function Faq() {
                   <span className="mkt-acc-icon" aria-hidden="true" />
                 </button>
                 <div className="mkt-acc-panel">
-                  <p>{f.a}</p>
+                  <div><p>{f.a}</p></div>
                 </div>
               </div>
             )
@@ -225,8 +152,9 @@ function Faq() {
 ---------------------------------------------------------------- */
 export default function Landing() {
   const orbsRef = useRef(null)
+  const revealRef = useReveal()
 
-  // Gentle scroll parallax on the background orbs (CSS transforms only).
+  // Gentle scroll parallax on the hero orbs (CSS transforms only).
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce || !orbsRef.current) return
@@ -247,112 +175,189 @@ export default function Landing() {
   }, [])
 
   return (
-    <div className="mkt" id="top">
-      {/* ---------- Sticky header ---------- */}
-      <SiteHeader logoSrc="/apex-logo.svg" ctaHref="/signup" />
+    <div className="mkt" id="top" ref={revealRef}>
+      {/* ---------- Sticky glassmorphism navbar ---------- */}
+      <SiteHeader logoSrc="/apex-logo.svg" ctaHref="/signup" ctaLabel="Start Learning" loginHref="/login" />
 
       {/* ---------- Hero ---------- */}
       <section className="mkt-hero">
         <div className="mkt-orbs" ref={orbsRef} aria-hidden="true">
+          <span className="mkt-orb orb-teal" />
           <span className="mkt-orb orb-gold" />
-          <span className="mkt-orb orb-cyan" />
-          <span className="mkt-orb orb-navy" />
+          <span className="mkt-orb orb-blue" />
           <span className="mkt-grid-lines" />
         </div>
 
         <div className="mkt-wrap mkt-hero-inner">
           <div className="mkt-hero-copy">
             <span className="mkt-hero-badge">
-              <img src="/apex-logo.svg" alt="Apex Academy" width="34" height="34" />
-              Apex Academy
+              <span className="dot" aria-hidden="true" />
+              AQA GCSE Maths · Built in Kenya
             </span>
             <h1 className="mkt-hero-title">
-              The summit is
-              <span className="mkt-hero-accent"> closer </span>
-              than you think.
+              Master GCSE AQA Maths,
+              <span className="accent"> Built for Kenyan Students.</span>
             </h1>
             <p className="mkt-hero-lead">
-              Premium KS3 &amp; GCSE self-study for ambitious Kenyan students.
-              Crisp lessons, instant feedback and progress that climbs with you —
-              built around the AQA specifications.
+              A premium, self-paced platform for AQA Mathematics (8300) — clear,
+              spec-aligned lessons with worked solutions and instant feedback,
+              priced for Kenyan families and paid for with M-Pesa.
             </p>
             <div className="mkt-hero-cta">
-              <Link to="/signup" className="mkt-btn mkt-btn-primary">Start learning</Link>
-              <a href="#subjects" className="mkt-btn mkt-btn-ghost">Explore subjects</a>
+              <Link to="/subjects" className="mkt-btn mkt-btn-teal">Browse Lessons</Link>
+              <Link to="/signup" className="mkt-btn mkt-btn-ghost on-dark">Start Free</Link>
             </div>
-            <dl className="mkt-hero-stats">
-              <div><dt>8</dt><dd>AQA subjects</dd></div>
-              <div><dt>KS3 → GCSE</dt><dd>one path</dd></div>
-              <div><dt>M-Pesa</dt><dd>simple pricing</dd></div>
-            </dl>
+            <p className="mkt-hero-trust">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              First three weeks free — no card required.
+            </p>
           </div>
 
-          <div className="mkt-hero-stack" aria-hidden="true">
-            <div className="mkt-float-card card-a tilt">
-              <span className="mkt-fc-label">Mathematics · 8300</span>
-              <span className="mkt-fc-q">Solve 5x − 4 = 2x + 11</span>
-              <span className="mkt-fc-ans">x = 5 ✓</span>
-              <span className="mkt-fc-track"><span style={{ width: '72%' }} /></span>
-              <span className="mkt-fc-meta">Algebra · 72% mastered</span>
-            </div>
-            <div className="mkt-float-card card-b tilt">
-              <span className="mkt-fc-streak">🔥 12-day streak</span>
-              <span className="mkt-fc-meta">Lessons mastered this week</span>
-              <strong className="mkt-fc-big">9</strong>
-            </div>
-            <div className="mkt-float-card card-c tilt">
-              <span className="mkt-fc-grade">Predicted</span>
-              <strong className="mkt-fc-gradeval">Grade 8</strong>
-            </div>
+          {/* IMAGE SLOT — Hero: a GCSE student studying.
+              Replace /public/hero-student.jpg with your own image (portrait,
+              ideally 4:5). Update the alt text to describe it. */}
+          <div className="mkt-hero-media">
+            <span className="mkt-shape mkt-shape-ring" aria-hidden="true" />
+            <span className="mkt-shape mkt-shape-dot" aria-hidden="true" />
+            <figure className="mkt-hero-frame">
+              <img src="/hero-student.jpg" alt="A student studying on the Apex Academy platform" width="640" height="800" />
+              <figcaption className="mkt-hero-frame-label">Image slot · replace /hero-student.jpg</figcaption>
+            </figure>
+            <span className="mkt-float-chip chip-spec" aria-hidden="true">
+              <span className="k">Specification</span>
+              <span className="v">AQA Maths 8300</span>
+            </span>
+            <span className="mkt-float-chip chip-free" aria-hidden="true">
+              <span className="k">Get started</span>
+              <span className="v">Free weeks 1–3</span>
+            </span>
           </div>
         </div>
       </section>
 
-      {/* ---------- Founder ---------- */}
-      <FounderWelcome name="Maxwell Muhanji" title="Founder & Director, Apex Academy" />
+      {/* ---------- Stats strip (honest, editable placeholders) ---------- */}
+      <section className="mkt-stats">
+        <div className="mkt-wrap">
+          <div className="mkt-stats-strip mkt-reveal">
+            {STATS.map((s) => (
+              <div className="mkt-stat" key={s.label}>
+                <div className={`mkt-stat-value ${s.placeholder ? 'is-placeholder' : ''}`}>
+                  {s.value}
+                  {s.unit && <span className="unit">{s.unit}</span>}
+                </div>
+                <div className="mkt-stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* ---------- Subjects ---------- */}
-      <SubjectsGrid />
+      {/* ---------- Subject / curriculum explorer (AQA only) ---------- */}
+      <section className="mkt-section mkt-subjects" id="subjects">
+        <div className="mkt-wrap">
+          <div className="mkt-subjects-head mkt-reveal">
+            <div className="mkt-section-head">
+              <span className="mkt-eyebrow">The curriculum · AQA</span>
+              <h2 className="mkt-h2">Explore the subjects we teach.</h2>
+              <p className="mkt-lead">
+                Mathematics (AQA 8300) is live and fully built today. More AQA
+                courses are on the way — hover any card to view its syllabus.
+              </p>
+            </div>
+            <Link to="/subjects" className="mkt-btn mkt-btn-ghost">All subjects {ARROW}</Link>
+          </div>
 
-      {/* ---------- Curriculum tabs ---------- */}
-      <CurriculumTabs />
+          <div className="mkt-subject-grid mkt-reveal">
+            {SUBJECTS.map((s) => {
+              const live = s.status === 'live'
+              return (
+                <Link
+                  key={s.slug}
+                  to={`/subjects/${s.slug}`}
+                  className={`mkt-subject-card ${live ? 'is-featured' : ''}`}
+                >
+                  <span className="mkt-subject-top">
+                    <span className="mkt-subject-glyph" style={{ background: s.accent }}>{s.glyph}</span>
+                    <span className={`mkt-chip ${live ? 'is-live' : 'is-soon'}`}>
+                      {live ? 'Available now' : 'Coming soon'}
+                    </span>
+                  </span>
+                  <span className="mkt-subject-name">{s.name}</span>
+                  <span className="mkt-subject-board">{s.spec}</span>
+                  <span className="mkt-subject-desc">{s.tagline}</span>
+                  <span className="mkt-subject-syllabus">View syllabus {ARROW}</span>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- The Apex Advantage ---------- */}
+      <section className="mkt-section mkt-advantage" id="advantage">
+        <div className="mkt-wrap">
+          <div className="mkt-section-head center mkt-reveal">
+            <span className="mkt-eyebrow on-dark" style={{ justifyContent: 'center' }}>Why Apex Academy</span>
+            <h2 className="mkt-h2 on-dark">The Apex advantage.</h2>
+            <p className="mkt-lead on-dark">
+              A focused, exam-ready way to study — designed around how Kenyan
+              students actually learn, revise and pay.
+            </p>
+          </div>
+
+          <div className="mkt-adv-grid mkt-reveal">
+            {ADVANTAGES.map((a, i) => (
+              <article className="mkt-adv-card" key={a.title}>
+                <span className="mkt-adv-index">0{i + 1}</span>
+                <span className="mkt-adv-icon">{a.icon}</span>
+                <h3 className="mkt-adv-title">{a.title}</h3>
+                <p className="mkt-adv-text">{a.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ---------- Pricing ---------- */}
       <section className="mkt-section mkt-pricing" id="pricing">
         <div className="mkt-wrap">
-          <div className="mkt-section-head center">
-            <span className="mkt-eyebrow">Fair, transparent pricing</span>
-            <h2 className="mkt-h2">One price. Every subject. No surprises.</h2>
-            <p className="mkt-section-lead">
-              Start free, then choose the rhythm that suits your family. Pay with
-              M-Pesa — cancel any time.
-            </p>
+          <div className="mkt-section-head center mkt-reveal">
+            <span className="mkt-eyebrow" style={{ justifyContent: 'center' }}>Fair, transparent pricing</span>
+            <h2 className="mkt-h2">One price. The whole course.</h2>
           </div>
 
-          <div className="mkt-plans">
-            <article className="mkt-plan tilt">
+          <div className="mkt-free-banner mkt-reveal">
+            <span aria-hidden="true">{CHECK}</span>
+            <span><strong>Weeks 1–3 are free</strong> — start learning today, pay only when you are ready.</span>
+          </div>
+
+          <div className="mkt-plans mkt-reveal">
+            <article className="mkt-plan">
               <span className="mkt-plan-name">Monthly</span>
-              <div className="mkt-plan-price"><span>KES</span><strong>500</strong><small>/month</small></div>
+              <div className="mkt-plan-price"><span className="cur">KES</span><strong>500</strong><small>/month</small></div>
               <p className="mkt-plan-note">Stay flexible — perfect for a focused revision push.</p>
               <ul className="mkt-plan-list">
-                <li>Full access to every live subject</li>
-                <li>Instant feedback &amp; worked solutions</li>
-                <li>Parent progress dashboard</li>
-                <li>Cancel any time</li>
+                <li>{CHECK} Full access to every live lesson</li>
+                <li>{CHECK} Worked solutions &amp; instant feedback</li>
+                <li>{CHECK} Learn at your own pace, any device</li>
+                <li>{CHECK} Pay with M-Pesa · cancel any time</li>
               </ul>
               <Link to="/signup" className="mkt-btn mkt-btn-ghost mkt-btn-block">Choose monthly</Link>
             </article>
 
-            <article className="mkt-plan is-featured tilt">
+            <article className="mkt-plan is-featured">
               <span className="mkt-plan-flag">Best value</span>
               <span className="mkt-plan-name">Per term</span>
-              <div className="mkt-plan-price"><span>KES</span><strong>1,500</strong><small>/term</small></div>
-              <p className="mkt-plan-note">Three months of momentum — one month free vs monthly.</p>
+              <div className="mkt-plan-price"><span className="cur">KES</span><strong>1,500</strong><small>/term</small></div>
+              <p className="mkt-plan-note">Three months of momentum — one month free versus monthly.</p>
               <ul className="mkt-plan-list">
-                <li>Everything in Monthly</li>
-                <li>Uninterrupted access all term</li>
-                <li>Priority access to new subjects</li>
-                <li>Best value for exam season</li>
+                <li>{CHECK} Everything in Monthly</li>
+                <li>{CHECK} Uninterrupted access all term</li>
+                <li>{CHECK} Best value for exam season</li>
+                <li>{CHECK} Pay once with M-Pesa</li>
               </ul>
               <Link to="/signup" className="mkt-btn mkt-btn-primary mkt-btn-block">Start learning</Link>
             </article>
@@ -365,15 +370,18 @@ export default function Landing() {
 
       {/* ---------- Closing CTA ---------- */}
       <section className="mkt-section mkt-final">
-        <div className="mkt-wrap mkt-final-inner">
+        <div className="mkt-wrap mkt-final-inner mkt-reveal">
           <img src="/apex-logo.svg" alt="" width="56" height="56" aria-hidden="true" />
           <h2 className="mkt-h2 on-dark">Your best grade starts with one lesson.</h2>
-          <p>Join Apex Academy and turn ambition into results — today.</p>
-          <Link to="/signup" className="mkt-btn mkt-btn-primary">Start learning</Link>
+          <p>Join Apex Academy and turn ambition into results — starting with three weeks free.</p>
+          <div className="mkt-final-cta">
+            <Link to="/signup" className="mkt-btn mkt-btn-primary">Start Free</Link>
+            <Link to="/subjects" className="mkt-btn mkt-btn-ghost on-dark">Browse Lessons</Link>
+          </div>
         </div>
       </section>
 
-      {/* ---------- Footer ---------- */}
+      {/* ---------- Footer (4 columns) ---------- */}
       <footer className="mkt-footer">
         <div className="mkt-wrap">
           <div className="mkt-footer-grid">
@@ -383,32 +391,51 @@ export default function Landing() {
                 <span>Apex Academy</span>
               </span>
               <p className="mkt-footer-blurb">
-                Premium KS3 &amp; GCSE self-study for ambitious Kenyan students —
-                AQA-aligned lessons, instant feedback and progress that climbs with you.
+                Premium, self-paced GCSE study for Kenyan students — AQA-aligned
+                Mathematics with worked solutions, instant feedback and simple
+                M-Pesa pricing.
               </p>
+              {/* SOCIAL — TikTok handle supplied by the brief. */}
+              <a className="mkt-social" href="https://www.tiktok.com/@apexacademy.ke" target="_blank" rel="noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M16.5 3c.4 2.3 1.8 3.9 4 4.2v2.6c-1.5.1-2.9-.3-4.2-1v6.1c0 3.4-2.5 5.8-5.7 5.8-3 0-5.3-2.2-5.3-5.1 0-3 2.4-5.2 5.6-5 .2 0 .4 0 .6.1v2.8c-.2-.1-.5-.1-.8-.1-1.4 0-2.5 1-2.5 2.3 0 1.4 1.1 2.4 2.4 2.4 1.5 0 2.6-1.1 2.6-2.9V3h2.9Z" />
+                </svg>
+                @apexacademy.ke
+              </a>
             </div>
+
             <div className="mkt-footer-col">
-              <h5>Learn</h5>
-              <a href="#subjects">Subjects</a>
-              <a href="#curriculum">Curriculum</a>
+              <h5>Quick links</h5>
+              <Link to="/subjects">Browse lessons</Link>
               <a href="#pricing">Pricing</a>
               <a href="#faq">FAQ</a>
-            </div>
-            <div className="mkt-footer-col">
-              <h5>Account</h5>
+              <Link to="/signup">Start free</Link>
               <Link to="/login">Log in</Link>
-              <Link to="/signup">Create account</Link>
-              <Link to="/parent">Parents</Link>
             </div>
-            <div className="mkt-footer-col">
-              <h5>Apex</h5>
-              <a href="https://apexacademy.co.ke" target="_blank" rel="noreferrer">KS3 platform</a>
+
+            <div className="mkt-footer-col mkt-footer-contact">
+              <h5>Contact</h5>
+              {/* CONTACT — replace with your real details. */}
+              <a href="mailto:hello@apexacademy.co.ke">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+                hello@apexacademy.co.ke
+              </a>
+              <span>+254 7XX XXX XXX</span>
               <span>Nairobi, Kenya</span>
-              <span>Pay with M-Pesa</span>
+              <span>Mon–Sat · 8am–6pm</span>
+            </div>
+
+            <div className="mkt-footer-col">
+              <h5>Curriculum · AQA</h5>
+              <Link to="/subjects/maths">Mathematics · 8300</Link>
+              <span>Sciences · coming soon</span>
+              <span>English · coming soon</span>
+              <span>More AQA subjects soon</span>
             </div>
           </div>
+
           <div className="mkt-footer-base">
-            <span>© {new Date().getFullYear()} Apex Academy</span>
+            <span>© {new Date().getFullYear()} Apex Academy · Nairobi, Kenya</span>
             <span>AQA is the awarding body; Apex Academy is an independent study platform.</span>
           </div>
         </div>
