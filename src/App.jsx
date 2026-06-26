@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useEffect } from 'react'
 import Nav from './components/Nav.jsx'
 import Footer from './components/Footer.jsx'
@@ -22,17 +22,32 @@ function ScrollToTop() {
   return null
 }
 
+// Shared chrome (nav + footer) for the product / KS3 routes. The marketing
+// landing page is standalone and brings its own SiteHeader + footer.
+function AppLayout() {
+  return (
+    <>
+      <Nav />
+      <main className="app-main">
+        <Outlet />
+      </main>
+      <Footer />
+    </>
+  )
+}
+
 export default function App() {
   return (
     <>
       <div className="grain" aria-hidden="true" />
       <ScrollToTop />
-      <Nav />
-      <main className="app-main">
-        <Routes>
-          {/* /gcse and / both serve the GCSE landing page */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/gcse" element={<Landing />} />
+      <Routes>
+        {/* /gcse and / both serve the standalone GCSE marketing landing page */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/gcse" element={<Landing />} />
+
+        {/* Product routes share the app nav + footer chrome */}
+        <Route element={<AppLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/pricing" element={<Pricing />} />
@@ -51,9 +66,8 @@ export default function App() {
             element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>}
           />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
+        </Route>
+      </Routes>
     </>
   )
 }

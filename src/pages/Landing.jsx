@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS } from '../data/subjects.js'
+import SiteHeader from '../components/SiteHeader.jsx'
 import FounderWelcome from '../components/FounderWelcome.jsx'
 import '../marketing.css'
 
@@ -246,7 +247,10 @@ export default function Landing() {
   }, [])
 
   return (
-    <div className="mkt">
+    <div className="mkt" id="top">
+      {/* ---------- Sticky header ---------- */}
+      <SiteHeader logoSrc="/apex-logo.svg" ctaHref="/signup" />
+
       {/* ---------- Hero ---------- */}
       <section className="mkt-hero">
         <div className="mkt-orbs" ref={orbsRef} aria-hidden="true">
@@ -368,6 +372,47 @@ export default function Landing() {
           <Link to="/signup" className="mkt-btn mkt-btn-primary">Start learning</Link>
         </div>
       </section>
+
+      {/* ---------- Footer ---------- */}
+      <footer className="mkt-footer">
+        <div className="mkt-wrap">
+          <div className="mkt-footer-grid">
+            <div className="mkt-footer-brand">
+              <span className="mkt-footer-mark">
+                <img src="/apex-logo.svg" alt="" width="40" height="40" aria-hidden="true" />
+                <span>Apex Academy</span>
+              </span>
+              <p className="mkt-footer-blurb">
+                Premium KS3 &amp; GCSE self-study for ambitious Kenyan students —
+                AQA-aligned lessons, instant feedback and progress that climbs with you.
+              </p>
+            </div>
+            <div className="mkt-footer-col">
+              <h5>Learn</h5>
+              <a href="#subjects">Subjects</a>
+              <a href="#curriculum">Curriculum</a>
+              <a href="#pricing">Pricing</a>
+              <a href="#faq">FAQ</a>
+            </div>
+            <div className="mkt-footer-col">
+              <h5>Account</h5>
+              <Link to="/login">Log in</Link>
+              <Link to="/signup">Create account</Link>
+              <Link to="/parent">Parents</Link>
+            </div>
+            <div className="mkt-footer-col">
+              <h5>Apex</h5>
+              <a href="https://apexacademy.co.ke" target="_blank" rel="noreferrer">KS3 platform</a>
+              <span>Nairobi, Kenya</span>
+              <span>Pay with M-Pesa</span>
+            </div>
+          </div>
+          <div className="mkt-footer-base">
+            <span>© {new Date().getFullYear()} Apex Academy</span>
+            <span>AQA is the awarding body; Apex Academy is an independent study platform.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
