@@ -63,7 +63,7 @@ export default function App() {
           />
           <Route
             path="/parent"
-            element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>}
+            element={<ProtectedRoute role="parent"><ParentDashboard /></ProtectedRoute>}
           />
           <Route path="*" element={<NotFound />} />
         </Route>

@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { TRIAL_ACCOUNTS } from '../api/client.js'
 import Logo from '../components/Logo.jsx'
+
+// Short, friendly label for each trial account.
+const TRIAL_LABELS = {
+  'student@apex.demo': 'Student · free (weeks 1–3)',
+  'premium@apex.demo': 'Student · premium (all weeks)',
+  'parent@apex.demo': 'Parent · progress dashboard',
+}
 
 export default function Login() {
   const { login, hasBackend } = useAuth()
@@ -14,6 +22,8 @@ export default function Login() {
   const [busy, setBusy] = useState(false)
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
+  // One click drops a trial login into the form, ready to submit.
+  const useTrial = (acc) => () => { setForm({ email: acc.email, password: acc.password }); setError('') }
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -46,7 +56,22 @@ export default function Login() {
           <span className="eyebrow">Log in</span>
           <h1 className="auth-title">Welcome back to Apex GCSE</h1>
           {!hasBackend && (
-            <p className="auth-note">Preview mode: use the email and password you signed up with in this browser.</p>
+            <div className="auth-note">
+              <p style={{ margin: 0 }}>
+                Preview mode — sign in with a trial account (tap to fill), or use an
+                email and password you created in this browser.
+              </p>
+              <ul className="trial-list">
+                {TRIAL_ACCOUNTS.map((acc) => (
+                  <li key={acc.email}>
+                    <button type="button" className="trial-chip" onClick={useTrial(acc)}>
+                      <strong>{TRIAL_LABELS[acc.email] || acc.role}</strong>
+                      <span>{acc.email} · {acc.password}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <form onSubmit={onSubmit} noValidate>
             <div className="field">

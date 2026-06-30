@@ -76,3 +76,12 @@ export const api = {
   parentChildren: withFallback(live.parentChildren, demo.parentChildren),
   startMpesa: withFallback(live.startMpesa, demo.startMpesa),
 }
+
+// Pre-seed trial logins, but ONLY in demo mode — a configured live backend
+// owns its own accounts and must never be seeded from the browser.
+export function seedTrialAccounts() {
+  if (!hasBackend) demo.seedTrialAccounts()
+}
+
+// Trial credentials, surfaced in the UI (demo mode only) so testers can sign in.
+export const TRIAL_ACCOUNTS = demo.TRIAL_ACCOUNTS

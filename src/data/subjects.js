@@ -1,5 +1,6 @@
-// Eight AQA GCSE subjects. Maths is fully built; the rest are scaffolded as
-// "coming soon" so they appear on the dashboard without blocking launch.
+// Eight AQA GCSE subjects. Maths and Biology are fully built; the rest are
+// scaffolded as "coming soon" so they appear on the dashboard without blocking
+// launch. (Each "live" subject must have a curriculum in curriculum.js.)
 export const SUBJECTS = [
   {
     slug: 'maths',
@@ -14,7 +15,7 @@ export const SUBJECTS = [
     slug: 'biology',
     name: 'Biology',
     spec: 'AQA 8461',
-    status: 'soon',
+    status: 'live',
     tagline: 'Cells, organisation, infection, bioenergetics and ecology.',
     accent: '#4f9d7e',
     glyph: 'B',

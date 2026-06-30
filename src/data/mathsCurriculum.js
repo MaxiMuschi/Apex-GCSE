@@ -4,9 +4,8 @@
 // Progress is tracked per question and persisted per user.
 //
 // Freemium model: lessons in weeks 1–3 are free; weeks 4+ are premium.
+// (The free-week threshold itself lives in curriculum.js.)
 // ============================================================
-
-export const FREE_WEEKS = 3
 
 // Question shapes:
 //   { type: 'mcq', options: [...], answer: <index> }
@@ -513,11 +512,5 @@ export const MATHS = {
   ],
 }
 
-// ----- Helpers -----
-export const allLessons = MATHS.units.flatMap((u) =>
-  u.lessons.map((l) => ({ ...l, unitId: u.id, unitTitle: u.title }))
-)
-export const lessonById = (id) => allLessons.find((l) => l.id === id)
-export const isFreeLesson = (lesson) => lesson.week <= FREE_WEEKS
-export const totalQuestions = allLessons.reduce((n, l) => n + l.questions.length, 0)
-export const totalLessons = allLessons.length
+// Shared helpers (allLessons, lessonById, isFreeLesson, totals, …) now live in
+// ./curriculum.js so they can span every live subject, not just Maths.

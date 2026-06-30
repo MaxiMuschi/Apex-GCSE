@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import { lessonById, allLessons, isFreeLesson } from '../data/mathsCurriculum.js'
+import { lessonById, lessonsForSlug, isFreeLesson } from '../data/curriculum.js'
+import { subjectBySlug } from '../data/subjects.js'
 import { lessonStats } from '../lib/progress.js'
 import QuestionPlayer from '../components/QuestionPlayer.jsx'
 
@@ -11,15 +12,22 @@ export default function LessonView() {
   const lesson = lessonById(lessonId)
   const [showTeach, setShowTeach] = useState(true)
 
-  if (!lesson) return <Navigate to="/subjects/maths" replace />
+  if (!lesson) return <Navigate to="/subjects" replace />
+
+  // Everything below is scoped to the lesson's own subject so breadcrumbs and
+  // the "up next" link stay within the same course.
+  const subject = subjectBySlug(lesson.subjectSlug)
+  const subjectName = subject?.name || 'Course'
+  const subjectHref = `/subjects/${lesson.subjectSlug}`
 
   const locked = !isFreeLesson(lesson) && user.plan !== 'premium'
   const stats = lessonStats(lesson, progress)
   const answered = progress?.[lesson.id]?.answered || {}
 
-  // Next lesson for the "up next" footer.
-  const idx = allLessons.findIndex((l) => l.id === lesson.id)
-  const next = allLessons[idx + 1]
+  // Next lesson within this subject for the "up next" footer.
+  const subjectLessons = lessonsForSlug(lesson.subjectSlug)
+  const idx = subjectLessons.findIndex((l) => l.id === lesson.id)
+  const next = subjectLessons[idx + 1]
   const nextOpen = next && (isFreeLesson(next) || user.plan === 'premium')
 
   if (locked) {
@@ -34,7 +42,7 @@ export default function LessonView() {
           </p>
           <div className="gate-actions">
             <Link to="/pricing" className="btn btn-primary">Unlock premium</Link>
-            <Link to="/subjects/maths" className="btn btn-ghost">Back to Maths</Link>
+            <Link to={subjectHref} className="btn btn-ghost">Back to {subjectName}</Link>
           </div>
         </div>
       </div>
@@ -44,7 +52,7 @@ export default function LessonView() {
   return (
     <div className="wrap section lesson-view">
       <nav className="crumbs">
-        <Link to="/subjects/maths">Mathematics</Link> <span>/</span> {lesson.unitTitle}
+        <Link to={subjectHref}>{subjectName}</Link> <span>/</span> {lesson.unitTitle}
       </nav>
 
       <header className="lesson-header rise">
@@ -99,7 +107,7 @@ export default function LessonView() {
         {stats.complete && <p className="lesson-done">Lesson mastered — every question correct.</p>}
         {next ? (
           nextOpen ? (
-            <Link to={`/subjects/maths/${next.id}`} className="btn btn-ink">Next: {next.title} →</Link>
+            <Link to={`${subjectHref}/${next.id}`} className="btn btn-ink">Next: {next.title} →</Link>
           ) : (
             <Link to="/pricing" className="btn btn-primary">Unlock the next lesson →</Link>
           )

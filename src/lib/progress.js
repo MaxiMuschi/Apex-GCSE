@@ -1,5 +1,5 @@
 // Progress helpers shared across the dashboard, subject and lesson views.
-import { allLessons } from '../data/mathsCurriculum.js'
+import { allLessons } from '../data/curriculum.js'
 
 // A lesson counts as "complete" when every question has been answered correctly.
 export function lessonStats(lesson, progress) {
@@ -18,11 +18,13 @@ export function lessonStats(lesson, progress) {
   }
 }
 
-export function subjectStats(progress) {
+// Aggregate stats over a set of lessons. Defaults to every live lesson, or
+// pass a subject's lesson list (lessonsForSlug) for per-subject mastery.
+export function subjectStats(progress, lessons = allLessons) {
   let correct = 0
   let total = 0
   let lessonsComplete = 0
-  for (const lesson of allLessons) {
+  for (const lesson of lessons) {
     const s = lessonStats(lesson, progress)
     correct += s.correct
     total += s.total
@@ -32,7 +34,7 @@ export function subjectStats(progress) {
     correct,
     total,
     lessonsComplete,
-    lessonsTotal: allLessons.length,
+    lessonsTotal: lessons.length,
     pct: total ? Math.round((correct / total) * 100) : 0,
   }
 }

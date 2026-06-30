@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../api/client.js'
-import { MATHS } from '../data/mathsCurriculum.js'
+import { CURRICULA } from '../data/curriculum.js'
 import { subjectStats, lessonStats } from '../lib/progress.js'
 import ProgressRing from '../components/ProgressRing.jsx'
 
@@ -25,7 +25,7 @@ export default function ParentDashboard() {
         <span className="eyebrow">Parent dashboard</span>
         <h1 className="display-xl">Following {children?.length === 1 ? 'one learner' : 'your learners'}.</h1>
         <p className="muted page-lead">
-          See exactly where each student is across the AQA Maths course — which lessons are
+          See exactly where each student is across every AQA course — which lessons are
           mastered, where they’re stuck, and what to nudge next.
         </p>
       </div>
@@ -53,14 +53,22 @@ export default function ParentDashboard() {
       <div className="child-list">
         {children?.map((child) => {
           const stats = subjectStats(child.progress)
-          // Surface the units where the child has the most room to grow.
-          const weakest = MATHS.units
-            .map((u) => {
-              const ls = u.lessons.map((l) => lessonStats(l, child.progress))
-              const total = ls.reduce((n, s) => n + s.total, 0)
-              const correct = ls.reduce((n, s) => n + s.correct, 0)
-              return { title: u.title, pct: total ? Math.round((correct / total) * 100) : 0 }
-            })
+          // Surface the units (across every live subject) where the child has
+          // the most room to grow.
+          const weakest = Object.values(CURRICULA)
+            .flatMap((c) =>
+              c.units.map((u) => {
+                const ls = u.lessons.map((l) => lessonStats(l, child.progress))
+                const total = ls.reduce((n, s) => n + s.total, 0)
+                const correct = ls.reduce((n, s) => n + s.correct, 0)
+                return {
+                  key: `${c.slug}-${u.id}`,
+                  title: u.title,
+                  subject: c.name,
+                  pct: total ? Math.round((correct / total) * 100) : 0,
+                }
+              })
+            )
             .sort((a, b) => a.pct - b.pct)
 
           return (
@@ -87,8 +95,8 @@ export default function ParentDashboard() {
               <div className="child-units">
                 <span className="eyebrow">By unit</span>
                 {weakest.map((u) => (
-                  <div key={u.title} className="cu-row">
-                    <span>{u.title}</span>
+                  <div key={u.key} className="cu-row">
+                    <span>{u.subject} · {u.title}</span>
                     <div className="cu-track"><div className="cu-fill" style={{ width: `${u.pct}%` }} /></div>
                     <span className="cu-pct">{u.pct}%</span>
                   </div>

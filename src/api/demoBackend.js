@@ -19,6 +19,40 @@ const wait = (ms = 380) => new Promise((r) => setTimeout(r, ms))
 const makeToken = (id) => `demo.${id}`
 const idFromToken = (t) => (t && t.startsWith('demo.') ? t.slice(5) : null)
 
+// ----- Trial accounts -----
+// Pre-seeded logins so every area (free study, premium study, parent view) is
+// reachable before real passwords are issued. These exist ONLY in demo mode
+// (VITE_API_URL unset). Swap them for real backend accounts at launch.
+export const TRIAL_ACCOUNTS = [
+  {
+    id: 'seed-student', name: 'Trial Student', email: 'student@apex.demo',
+    password: 'apexstudent', role: 'student', yearGroup: 'Year 10', plan: 'free',
+  },
+  {
+    id: 'seed-premium', name: 'Trial Premium', email: 'premium@apex.demo',
+    password: 'apexpremium', role: 'student', yearGroup: 'Year 11', plan: 'premium',
+  },
+  {
+    id: 'seed-parent', name: 'Trial Parent', email: 'parent@apex.demo',
+    password: 'apexparent', role: 'parent', yearGroup: null, plan: 'free',
+  },
+]
+
+// Idempotently inject the trial accounts. Safe to call on every load: existing
+// accounts (matched by email) are never overwritten, so a learner's own
+// progress and any upgrades are preserved.
+export function seedTrialAccounts() {
+  const users = read(USERS_KEY, {})
+  let changed = false
+  for (const acc of TRIAL_ACCOUNTS) {
+    if (!Object.values(users).some((u) => u.email === acc.email)) {
+      users[acc.id] = { ...acc, enrolledAt: new Date().toISOString(), children: [] }
+      changed = true
+    }
+  }
+  if (changed) write(USERS_KEY, users)
+}
+
 function currentUser() {
   const id = idFromToken(localStorage.getItem(TOKEN_KEY))
   if (!id) throw new Error('Not authenticated')

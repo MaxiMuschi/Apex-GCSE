@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../api/client.js'
-import { FREE_WEEKS } from '../data/mathsCurriculum.js'
+import { FREE_WEEKS } from '../data/curriculum.js'
 
 const FREE_FEATURES = [
   'Weeks 1–3 of every subject',

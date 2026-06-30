@@ -1,7 +1,7 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { subjectBySlug } from '../data/subjects.js'
-import { MATHS, isFreeLesson, FREE_WEEKS } from '../data/mathsCurriculum.js'
+import { curriculumBySlug, lessonsForSlug, isFreeLesson, FREE_WEEKS } from '../data/curriculum.js'
 import { lessonStats, subjectStats } from '../lib/progress.js'
 import ProgressRing from '../components/ProgressRing.jsx'
 
@@ -9,13 +9,16 @@ export default function SubjectView() {
   const { slug } = useParams()
   const { user, progress } = useAuth()
   const subject = subjectBySlug(slug)
+  const curriculum = curriculumBySlug(slug)
 
-  if (!subject || subject.status !== 'live') {
+  // A subject is only reachable if it is both marketed as live AND has a
+  // curriculum wired up — otherwise bounce back to the subject index.
+  if (!subject || subject.status !== 'live' || !curriculum) {
     return <Navigate to="/subjects" replace />
   }
 
   const isPremium = user?.plan === 'premium'
-  const stats = subjectStats(progress)
+  const stats = subjectStats(progress, lessonsForSlug(slug))
 
   return (
     <div className="wrap section subject-view">
@@ -39,7 +42,7 @@ export default function SubjectView() {
       </header>
 
       <div className="units">
-        {MATHS.units.map((unit, ui) => (
+        {curriculum.units.map((unit, ui) => (
           <section key={unit.id} className="unit">
             <div className="unit-head">
               <span className="unit-index">{String(ui + 1).padStart(2, '0')}</span>

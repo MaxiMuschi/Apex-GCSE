@@ -139,6 +139,11 @@
 .auth-card { width: 100%; max-width: 420px; }
 .auth-title { font-size: 2rem; margin: 0.4rem 0 1.4rem; }
 .auth-note { background: rgba(79,157,126,0.12); color: var(--sage-deep); padding: 0.7rem 0.9rem; border-radius: var(--r-sm); font-size: 0.85rem; margin-bottom: 1.4rem; }
+.trial-list { list-style: none; margin: 0.7rem 0 0; padding: 0; display: grid; gap: 0.45rem; }
+.trial-chip { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 2px; padding: 0.5rem 0.7rem; border: 1px solid rgba(79,157,126,0.35); background: rgba(255,255,255,0.6); border-radius: var(--r-sm); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.trial-chip:hover { background: #fff; border-color: var(--sage-deep); }
+.trial-chip strong { font-size: 0.82rem; color: var(--sage-deep); }
+.trial-chip span { font-size: 0.76rem; color: var(--text-soft); font-variant-numeric: tabular-nums; }
 .auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .auth-alt { margin-top: 1.4rem; color: var(--text-soft); font-size: 0.92rem; }
 .auth-alt a { color: var(--amber-deep); font-weight: 700; }

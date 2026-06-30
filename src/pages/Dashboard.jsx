@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { SUBJECTS } from '../data/subjects.js'
-import { MATHS, allLessons, isFreeLesson } from '../data/mathsCurriculum.js'
+import { allLessons, isFreeLesson, lessonsForSlug } from '../data/curriculum.js'
 import { subjectStats, lessonStats } from '../lib/progress.js'
 import ProgressRing from '../components/ProgressRing.jsx'
 
@@ -23,7 +23,7 @@ export default function Dashboard() {
           <p className="muted">
             {stats.lessonsComplete === 0
               ? 'Let’s get the first lesson under your belt.'
-              : `You’ve mastered ${stats.lessonsComplete} of ${stats.lessonsTotal} Maths lessons. Keep climbing.`}
+              : `You’ve mastered ${stats.lessonsComplete} of ${stats.lessonsTotal} lessons. Keep climbing.`}
           </p>
         </div>
         <span className={`chip ${user.plan === 'premium' ? 'chip-premium' : 'chip-free'}`}>
@@ -37,7 +37,7 @@ export default function Dashboard() {
           <ProgressRing value={stats.pct} size={84} stroke={8} />
           <div>
             <strong>{stats.pct}%</strong>
-            <span className="muted small">Maths mastery</span>
+            <span className="muted small">Overall mastery</span>
           </div>
         </div>
         <div className="snap-card">
@@ -70,12 +70,13 @@ export default function Dashboard() {
         <div className="subject-grid">
           {SUBJECTS.map((s) => {
             const live = s.status === 'live'
+            const subjectPct = live ? subjectStats(progress, lessonsForSlug(s.slug)).pct : 0
             const card = (
               <>
                 <div className="sg-top">
                   <span className="sg-glyph" style={{ background: s.accent }}>{s.glyph}</span>
                   {live
-                    ? <ProgressRing value={stats.pct} size={46} stroke={5} color={s.accent} />
+                    ? <ProgressRing value={subjectPct} size={46} stroke={5} color={s.accent} />
                     : <span className="chip chip-soon">Soon</span>}
                 </div>
                 <h3>{s.name}</h3>
@@ -96,7 +97,7 @@ export default function Dashboard() {
       </div>
 
       <p className="dash-foot muted small">
-        Studying {MATHS.tiers} tier content aligned to the {MATHS.spec} specification.
+        Studying Foundation &amp; Higher tier content aligned to the AQA specifications.
       </p>
     </div>
   )

@@ -273,12 +273,8 @@ export default function Landing() {
           <div className="mkt-subject-grid mkt-reveal">
             {SUBJECTS.map((s) => {
               const live = s.status === 'live'
-              return (
-                <Link
-                  key={s.slug}
-                  to={`/subjects/${s.slug}`}
-                  className={`mkt-subject-card ${live ? 'is-featured' : ''}`}
-                >
+              const inner = (
+                <>
                   <span className="mkt-subject-top">
                     <span className="mkt-subject-glyph" style={{ background: s.accent }}>{s.glyph}</span>
                     <span className={`mkt-chip ${live ? 'is-live' : 'is-soon'}`}>
@@ -288,8 +284,25 @@ export default function Landing() {
                   <span className="mkt-subject-name">{s.name}</span>
                   <span className="mkt-subject-board">{s.spec}</span>
                   <span className="mkt-subject-desc">{s.tagline}</span>
-                  <span className="mkt-subject-syllabus">View syllabus {ARROW}</span>
+                  <span className="mkt-subject-syllabus">
+                    {live ? <>View syllabus {ARROW}</> : 'In development'}
+                  </span>
+                </>
+              )
+              // Only live subjects link through to a real course page; coming-soon
+              // subjects render as a non-clickable card so nothing dead-ends.
+              return live ? (
+                <Link
+                  key={s.slug}
+                  to={`/subjects/${s.slug}`}
+                  className="mkt-subject-card is-featured"
+                >
+                  {inner}
                 </Link>
+              ) : (
+                <div key={s.slug} className="mkt-subject-card is-soon" aria-disabled="true">
+                  {inner}
+                </div>
               )
             })}
           </div>

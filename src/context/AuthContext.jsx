@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { api, getToken, setToken, hasBackend } from '../api/client.js'
+import { api, getToken, setToken, hasBackend, seedTrialAccounts } from '../api/client.js'
 
 const AuthContext = createContext(null)
 
@@ -12,6 +12,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let active = true
     async function bootstrap() {
+      // In demo mode, make sure the trial logins exist before anyone signs in.
+      seedTrialAccounts()
       if (!getToken()) {
         setLoading(false)
         return

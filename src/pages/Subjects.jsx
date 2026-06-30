@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import { SUBJECTS } from '../data/subjects.js'
-import { totalLessons, totalQuestions } from '../data/mathsCurriculum.js'
+import { totalLessons, totalQuestions } from '../data/curriculum.js'
 
 export default function Subjects() {
   const live = SUBJECTS.filter((s) => s.status === 'live')
   const soon = SUBJECTS.filter((s) => s.status === 'soon')
+  const liveNames = live.map((s) => s.name).join(' and ')
 
   return (
     <div className="wrap section">
@@ -12,9 +13,9 @@ export default function Subjects() {
         <span className="eyebrow">The Apex GCSE curriculum</span>
         <h1 className="display-xl">Eight AQA subjects, built the same careful way.</h1>
         <p className="muted page-lead">
-          We go deep before we go wide. Mathematics is fully built — {totalLessons} lessons and
-          {' '}{totalQuestions} questions across the whole specification. The other seven subjects
-          are being written to the same standard and open through the year.
+          We go deep before we go wide. {liveNames} are fully built — {totalLessons} lessons and
+          {' '}{totalQuestions} questions across {live.length} live courses. The remaining
+          {' '}{soon.length} subjects are being written to the same standard and open through the year.
         </p>
       </div>
 
