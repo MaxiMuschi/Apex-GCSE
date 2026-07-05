@@ -1,15 +1,23 @@
 # Apex Academy GCSE — Netlify build & SPA routing
+
 [build]
   command = "npm run build"
   publish = "dist"
 
-# Single-page app: every path falls back to index.html so client routing works
+# --- API proxy: forward same-domain /api/* to the Render backend ---
+# Must come BEFORE the SPA fallback below.
+[[redirects]]
+  from = "/api/*"
+  to = "https://apex-gcse.onrender.com/:splat"
+  status = 200
+  force = true
+
+# Single-page app: all other paths fall back to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Keep preview/branch deploys isolated from production
 [context.production.environment]
   NODE_ENV = "production"
 
